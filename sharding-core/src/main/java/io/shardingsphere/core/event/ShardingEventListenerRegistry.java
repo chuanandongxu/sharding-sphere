@@ -15,26 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl.mysql;
-
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.util.LinkedList;
-import java.util.List;
+package io.shardingsphere.core.event;
 
 /**
- * MySQL alter table statement.
- * 
- * @author duhongjun
+ * Sharding event listener registry.
+ *
+ * @author zhangliang
  */
-@Getter
-@Setter
-@ToString(callSuper = true)
-public final class MySQLAlterTableStatement extends AlterTableStatement {
+public interface ShardingEventListenerRegistry {
     
-    private final List<ColumnPosition> positionChangedColumns = new LinkedList<>();
+    /**
+     * Register all listeners.
+     */
+    void register();
 }

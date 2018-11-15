@@ -23,6 +23,8 @@ package io.shardingsphere.core.constant;
  * @author zhangliang
  */
 public enum AggregationType {
-    
+    /**
+     * 支持的聚合函数
+     */
     MAX, MIN, SUM, COUNT, AVG
 }

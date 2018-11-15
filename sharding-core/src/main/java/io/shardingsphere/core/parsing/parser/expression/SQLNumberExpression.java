@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Number expression.
- *
+ * SQLNumberExpression	数字表达式	Literals.INT, Literals.HEX
  * @author zhangliang
  */
 @RequiredArgsConstructor

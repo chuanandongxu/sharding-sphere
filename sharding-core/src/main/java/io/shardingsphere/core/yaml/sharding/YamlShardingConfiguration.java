@@ -32,9 +32,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Sharding configuration for yaml.
@@ -48,10 +46,6 @@ public class YamlShardingConfiguration {
     private Map<String, DataSource> dataSources = new HashMap<>();
     
     private YamlShardingRuleConfiguration shardingRule;
-    
-    private Map<String, Object> configMap = new LinkedHashMap<>();
-    
-    private Properties props = new Properties();
     
     /**
      * Unmarshal yaml sharding configuration from yaml file.

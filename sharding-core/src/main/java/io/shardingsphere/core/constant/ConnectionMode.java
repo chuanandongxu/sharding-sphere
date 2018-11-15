@@ -23,6 +23,8 @@ package io.shardingsphere.core.constant;
  * @author zhangyonglun
  */
 public enum ConnectionMode {
-    
+    /**
+     * 连接模式
+     */
     MEMORY_STRICTLY, CONNECTION_STRICTLY
 }

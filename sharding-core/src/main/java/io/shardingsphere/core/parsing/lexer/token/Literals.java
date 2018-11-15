@@ -23,6 +23,8 @@ package io.shardingsphere.core.parsing.lexer.token;
  * @author zhangliang
  */
 public enum Literals implements TokenType {
-    
+    /**
+     * 词法字面量标记
+     */
     INT, FLOAT, HEX, CHARS, IDENTIFIER, VARIABLE
 }

@@ -28,6 +28,9 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Master-slave rule configuration for yaml.
@@ -50,11 +53,17 @@ public class YamlMasterSlaveRuleConfiguration {
     
     private String loadBalanceAlgorithmClassName;
     
-    public YamlMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
+    private Map<String, Object> configMap = new ConcurrentHashMap<>();
+    
+    private Properties props = new Properties();
+    
+    public YamlMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration, final Map<String, Object> configMap, final Properties props) {
         name = masterSlaveRuleConfiguration.getName();
         masterDataSourceName = masterSlaveRuleConfiguration.getMasterDataSourceName();
         slaveDataSourceNames = masterSlaveRuleConfiguration.getSlaveDataSourceNames();
         loadBalanceAlgorithmClassName = null == masterSlaveRuleConfiguration.getLoadBalanceAlgorithm() ? null : masterSlaveRuleConfiguration.getLoadBalanceAlgorithm().getClass().getName();
+        this.configMap = configMap;
+        this.props = props;
     }
     
     /**

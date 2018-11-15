@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Identifier expression.
- *
+ * SQLIdentifierExpression	标识表达式	Literals.IDENTIFIER
  * @author zhangliang
  */
 @RequiredArgsConstructor

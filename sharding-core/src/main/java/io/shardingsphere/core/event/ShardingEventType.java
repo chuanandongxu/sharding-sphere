@@ -23,6 +23,8 @@ package io.shardingsphere.core.event;
  * @author zhangliang
  */
 public enum ShardingEventType {
-    
+    /**
+     * 分片事件类型
+     */
     BEFORE_EXECUTE, EXECUTE_SUCCESS, EXECUTE_FAILURE
 }

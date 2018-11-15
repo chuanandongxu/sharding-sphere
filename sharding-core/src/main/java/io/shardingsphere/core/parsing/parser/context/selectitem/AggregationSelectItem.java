@@ -50,7 +50,11 @@ public final class AggregationSelectItem implements SelectItem {
     
     @Setter
     private int index = -1;
-    
+
+    /**
+     * 获取表达式 min(`id`) --> min(id)
+     * @return
+     */
     @Override
     public String getExpression() {
         return SQLUtil.getExactlyValue(type.name() + innerExpression);

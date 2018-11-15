@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.lexer.token;
 
 /**
  * Default keyword.
- * 
+ * 默认词法关键词，所有数据库都有的
  * @author zhangliang 
  */
 public enum DefaultKeyword implements Keyword {

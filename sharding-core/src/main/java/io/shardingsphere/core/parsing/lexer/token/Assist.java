@@ -19,10 +19,12 @@ package io.shardingsphere.core.parsing.lexer.token;
 
 /**
  * Assist token.
- *
+ * 词法辅助标记
  * @author zhangliang
  */
 public enum Assist implements TokenType {
-    
+    /**
+     * 分析结束、分析错误
+     */
     END, ERROR
 }

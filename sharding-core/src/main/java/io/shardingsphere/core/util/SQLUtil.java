@@ -34,7 +34,7 @@ public class SQLUtil {
     
     /**
      * Get exactly value for SQL expression.
-     * 
+     *  如果带有[]`'"则去掉 如`id`--->id
      * <p>remove special char for SQL expression</p>
      * 
      * @param value SQL expression

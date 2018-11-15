@@ -31,8 +31,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Master-slave configuration for yaml.
@@ -46,10 +44,6 @@ public class YamlMasterSlaveConfiguration {
     private Map<String, DataSource> dataSources = new HashMap<>();
     
     private YamlMasterSlaveRuleConfiguration masterSlaveRule;
-    
-    private Map<String, Object> configMap = new ConcurrentHashMap<>();
-    
-    private Properties props = new Properties();
     
     /**
      * Unmarshal yaml master slave configuration from yaml file.

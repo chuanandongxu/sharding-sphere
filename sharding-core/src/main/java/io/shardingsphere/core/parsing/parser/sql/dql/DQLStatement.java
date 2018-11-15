@@ -37,7 +37,7 @@ public class DQLStatement extends AbstractSQLStatement {
     
     /**
      * Is DQL statement.
-     *
+     * 判断是否是查询语句
      * @param tokenType token type
      * @return is DQL or not
      */

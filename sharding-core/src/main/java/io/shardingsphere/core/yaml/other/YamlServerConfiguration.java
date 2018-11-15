@@ -15,18 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
+package io.shardingsphere.core.yaml.other;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
+import io.shardingsphere.core.rule.Authentication;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Properties;
 
 /**
- * Statement with single table extractor.
- * 
- * @author duhongjun
+ * Server configuration for yaml.
+ *
+ * @author chenqingyang
  */
-public final class OnlySingleTableExtractor extends DDLStatementExtractor {
+@Getter
+@Setter
+public final class YamlServerConfiguration {
     
-    public OnlySingleTableExtractor() {
-        addExtractHandler(new TableNameExtractHandler());
-    }
+    private Authentication authentication = new Authentication();
+    
+    private Properties props = new Properties();
 }

@@ -20,22 +20,17 @@ package io.shardingsphere.core.parsing;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.AntlrParsingEngine;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
-import io.shardingsphere.core.parsing.lexer.token.Token;
-import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
 /**
  * SQL parsing engine.
- *
+ * SQL 解析引擎
  * @author zhangliang
  */
 @RequiredArgsConstructor
@@ -44,7 +39,9 @@ public final class SQLParsingEngine {
     private final DatabaseType dbType;
     
     private final String sql;
-    
+    /**
+     * 分片规则
+     */
     private final ShardingRule shardingRule;
     
     private final ShardingTableMetaData shardingTableMetaData;
@@ -62,21 +59,8 @@ public final class SQLParsingEngine {
         }
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         lexerEngine.nextToken();
-        Token firstToken = lexerEngine.getCurrentToken();
-        SQLStatement result;
-        SQLParser sqlParser = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData);
-        Token currentToken = lexerEngine.getCurrentToken();
-        if (firstToken != currentToken) {
-            if (DDLStatement.isDDL(firstToken.getType(), currentToken.getType())) {
-                result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
-            } else {
-                result = sqlParser.parse();
-            }
-        } else if (TCLStatement.isTCL(firstToken.getType())) {
-            result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
-        } else {
-            result = sqlParser.parse();
-        }
+        /** 创建SQL parser对象，调用parse()方法 */
+        SQLStatement result = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData).parse();
         if (useCache) {
             ParsingResultCache.getInstance().put(sql, result);
         }

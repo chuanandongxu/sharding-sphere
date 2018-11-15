@@ -75,7 +75,7 @@ public final class CharType {
     
     /**
      * Adjust is symbol or not.
-     *
+     * 是否是符号 {} >= 等
      * @param ch to be adjusted char
      * @return is symbol or not
      */

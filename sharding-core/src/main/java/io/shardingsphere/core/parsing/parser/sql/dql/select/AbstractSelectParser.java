@@ -51,20 +51,33 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSelectParser implements SQLParser {
-    
+    /**
+     * 分片规则
+     */
     private final ShardingRule shardingRule;
-    
+    /**
+     * 词法解析引擎
+     */
     private final LexerEngine lexerEngine;
-    
+    /**
+     * select 从句解析
+     */
     private final AbstractSelectClauseParserFacade selectClauseParserFacade;
     
     private final List<SelectItem> items = new LinkedList<>();
-    
+    /**
+     * 分表元数据
+     */
     private final ShardingTableMetaData shardingTableMetaData;
-    
+
+    /**
+     * 解析select sql 语句
+     * @return
+     */
     @Override
     public final SelectStatement parse() {
         SelectStatement result = parseInternal();
+        // 是否包含子查询
         if (result.containsSubQuery()) {
             result = result.mergeSubQueryStatement();
         }
@@ -73,24 +86,45 @@ public abstract class AbstractSelectParser implements SQLParser {
         appendDerivedOrderBy(result);
         return result;
     }
-    
+
+    /**
+     * 解析SQL
+     * @return
+     */
     private SelectStatement parseInternal() {
         SelectStatement result = new SelectStatement();
+        // 解析SQL的过程中使用lexer进行分词
         lexerEngine.nextToken();
         parseInternal(result);
         return result;
     }
-    
+
+    /**
+     * 解析SQL，不同数据库有不同的实现
+     * @param selectStatement
+     */
     protected abstract void parseInternal(SelectStatement selectStatement);
-    
+
+    /**
+     * 解析distinct
+     */
     protected final void parseDistinct() {
         selectClauseParserFacade.getDistinctClauseParser().parse();
     }
-    
+
+    /**
+     * 解析select列表
+     * @param selectStatement
+     * @param items
+     */
     protected final void parseSelectList(final SelectStatement selectStatement, final List<SelectItem> items) {
         selectClauseParserFacade.getSelectListClauseParser().parse(selectStatement, items);
     }
-    
+
+    /**
+     * 解析from
+     * @param selectStatement
+     */
     protected final void parseFrom(final SelectStatement selectStatement) {
         lexerEngine.unsupportedIfEqual(DefaultKeyword.INTO);
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM)) {

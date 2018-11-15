@@ -51,37 +51,58 @@ import java.util.Set;
 @Setter
 @ToString(callSuper = true)
 public final class SelectStatement extends DQLStatement {
-    
+
+    /**
+     * 是否查询所有字段，select *
+     */
     private boolean containStar;
-    
+    /**
+     * 最后一个查询项下一个token的开始位置
+     */
     private int selectListLastPosition;
-    
+    /**
+     * 最后一个分组项下一个token的开始位置
+     */
     private int groupByLastPosition;
-    
+    /**
+     * 查询项集合  select a,b,c
+     */
     private final Set<SelectItem> items = new HashSet<>();
-    
+    /**
+     * 分组项集合 group by a,b,c
+     */
     private final List<OrderItem> groupByItems = new LinkedList<>();
-    
+    /**
+     * 排序项集合 order by a,b,c
+     */
     private final List<OrderItem> orderByItems = new LinkedList<>();
-    
+    /**
+     * 分页
+     */
     private Limit limit;
-    
+    /**
+     * 子查询
+     */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private SelectStatement subQueryStatement;
     
     /**
      * Get alias.
-     * 
+     * 获取别名
      * @param name name or alias
      * @return alias
      */
     public Optional<String> getAlias(final String name) {
+        // 包含*则直接返回
         if (containStar) {
             return Optional.absent();
         }
+        // 如`id`--->id
         String rawName = SQLUtil.getExactlyValue(name);
+        // 循环所有的查询项集合
         for (SelectItem each : items) {
+            // 获取表达式去掉``等符号
             if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
                 return each.getAlias();
             }

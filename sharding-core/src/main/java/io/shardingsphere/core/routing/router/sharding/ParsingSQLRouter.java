@@ -46,7 +46,6 @@ import io.shardingsphere.core.routing.type.broadcast.DatabaseBroadcastRoutingEng
 import io.shardingsphere.core.routing.type.broadcast.InstanceBroadcastRoutingEngine;
 import io.shardingsphere.core.routing.type.broadcast.TableBroadcastRoutingEngine;
 import io.shardingsphere.core.routing.type.complex.ComplexRoutingEngine;
-import io.shardingsphere.core.routing.type.defaultdb.DefaultDatabaseRoutingEngine;
 import io.shardingsphere.core.routing.type.ignore.IgnoreRoutingEngine;
 import io.shardingsphere.core.routing.type.standard.StandardRoutingEngine;
 import io.shardingsphere.core.routing.type.unicast.UnicastRoutingEngine;
@@ -138,8 +137,6 @@ public final class ParsingSQLRouter implements ShardingRouter {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (sqlStatement instanceof DCLStatement) {
             routingEngine = new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
-        } else if (shardingRule.isAllInDefaultDataSource(tableNames)) {
-            routingEngine = new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
         } else if (shardingConditions.isAlwaysFalse()) {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
         } else if (sqlStatement instanceof DALStatement) {
@@ -148,7 +145,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
+        } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllInDefaultDataSource(tableNames)) {
             routingEngine = new StandardRoutingEngine(shardingRule, tableNames.iterator().next(), shardingConditions);
         } else {
             // TODO config for cartesian set

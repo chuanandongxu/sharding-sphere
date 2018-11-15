@@ -28,11 +28,13 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Sharding rule configuration for yaml.
@@ -59,7 +61,11 @@ public class YamlShardingRuleConfiguration {
     
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
     
-    public YamlShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration) {
+    private Map<String, Object> configMap = new LinkedHashMap<>();
+    
+    private Properties props = new Properties();
+    
+    public YamlShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration, final Map<String, Object> configMap, final Properties props) {
         defaultDataSourceName = shardingRuleConfiguration.getDefaultDataSourceName();
         for (TableRuleConfiguration each : shardingRuleConfiguration.getTableRuleConfigs()) {
             tables.put(each.getLogicTable(), new YamlTableRuleConfiguration(each));
@@ -69,8 +75,10 @@ public class YamlShardingRuleConfiguration {
         defaultTableStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
         defaultKeyGeneratorClassName = null == shardingRuleConfiguration.getDefaultKeyGenerator() ? null : shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
         for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
-            masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
+            masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each, new HashMap<String, Object>(), new Properties()));
         }
+        this.configMap = configMap;
+        this.props = props;
     }
     
     /**

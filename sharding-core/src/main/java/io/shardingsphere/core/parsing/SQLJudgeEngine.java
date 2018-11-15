@@ -29,7 +29,6 @@ import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.SetStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
@@ -62,7 +61,7 @@ public final class SQLJudgeEngine {
     
     /**
      * Judge SQL type only.
-     *
+     * 判断SQL类型
      * @return SQL statement
      */
     public SQLStatement judge() {
@@ -71,9 +70,10 @@ public final class SQLJudgeEngine {
         while (true) {
             TokenType tokenType = lexerEngine.getCurrentToken().getType();
             if (tokenType instanceof Keyword) {
+                // DQL 语句
                 if (DQLStatement.isDQL(tokenType)) {
                     return getDQLStatement();
-                }
+                }// DML 语句
                 if (DMLStatement.isDML(tokenType)) {
                     return getDMLStatement(tokenType);
                 }
@@ -152,23 +152,10 @@ public final class SQLJudgeEngine {
         if (lexerEngine.skipIfEqual(MySQLKeyword.COLUMNS, MySQLKeyword.FIELDS)) {
             return parseShowColumnsFields(lexerEngine);
         }
-        if (lexerEngine.skipIfEqual(DefaultKeyword.CREATE) && lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
-            return parseShowCreateTable(lexerEngine);
-        }
         if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX, MySQLKeyword.INDEXES, MySQLKeyword.KEYS)) {
             return parseShowIndex(lexerEngine);
         }
         return new ShowOtherStatement();
-    }
-    
-    private DALStatement parseShowTableStatus(final LexerEngine lexerEngine) {
-        DALStatement result = new ShowTableStatusStatement();
-        lexerEngine.nextToken();
-        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
-            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
-        }
-        return result;
     }
     
     private DALStatement parseShowTables(final LexerEngine lexerEngine) {
@@ -191,10 +178,14 @@ public final class SQLJudgeEngine {
         return result;
     }
     
-    private DALStatement parseShowCreateTable(final LexerEngine lexerEngine) {
-        DALStatement result = new ShowCreateTableStatement();
-        parseSingleTableWithSchema(lexerEngine, result);
-        return result;
+    private void parseSingleTableWithSchema(final LexerEngine lexerEngine, final SQLStatement sqlStatement) {
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+        String literals = lexerEngine.getCurrentToken().getLiterals();
+        lexerEngine.nextToken();
+        if (lexerEngine.skipIfEqual(Symbol.DOT)) {
+            sqlStatement.addSQLToken(new SchemaToken(beginPosition, literals, null));
+            lexerEngine.nextToken(); 
+        }
     }
     
     private DALStatement parseShowIndex(final LexerEngine lexerEngine) {
@@ -208,13 +199,13 @@ public final class SQLJudgeEngine {
         return result;
     }
     
-    private void parseSingleTableWithSchema(final LexerEngine lexerEngine, final SQLStatement sqlStatement) {
-        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        String literals = lexerEngine.getCurrentToken().getLiterals();
+    private DALStatement parseShowTableStatus(final LexerEngine lexerEngine) {
+        DALStatement result = new ShowTableStatusStatement();
         lexerEngine.nextToken();
-        if (lexerEngine.skipIfEqual(Symbol.DOT)) {
-            sqlStatement.addSQLToken(new SchemaToken(beginPosition, literals, null));
-            lexerEngine.nextToken();
+        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
         }
+        return result;
     }
 }

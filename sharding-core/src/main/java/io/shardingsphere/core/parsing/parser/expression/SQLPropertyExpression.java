@@ -22,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Property expression.
+ * SQLPropertyExpression	属性表达式	无
  *
+ * 例如：SELECT * FROM t_order o ORDER BY o.order_id 中的 o.order_id。
  * @author zhangliang
  */
 @RequiredArgsConstructor

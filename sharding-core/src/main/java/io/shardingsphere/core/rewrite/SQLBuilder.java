@@ -185,9 +185,5 @@ public final class SQLBuilder {
                 return;
             }
         }
-        if (shardingCondition.getDataNodes().isEmpty()) {
-            expressions.add(shardingCondition.getInsertValueExpression());
-            parameters.addAll(shardingCondition.getParameters());
-        }
     }
 }

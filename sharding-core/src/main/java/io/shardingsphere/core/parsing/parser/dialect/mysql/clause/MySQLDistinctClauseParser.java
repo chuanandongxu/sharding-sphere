@@ -24,7 +24,7 @@ import io.shardingsphere.core.parsing.parser.clause.DistinctClauseParser;
 
 /**
  * Distinct clause parser for MySQL.
- *
+ * 解析distinct分句
  * @author zhangliang
  */
 public final class MySQLDistinctClauseParser extends DistinctClauseParser {
@@ -32,7 +32,11 @@ public final class MySQLDistinctClauseParser extends DistinctClauseParser {
     public MySQLDistinctClauseParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
     }
-    
+
+    /**
+     * 返回 DISTINCTROW
+     * @return
+     */
     @Override
     protected Keyword[] getSynonymousKeywordsForDistinct() {
         return new Keyword[] {MySQLKeyword.DISTINCTROW};

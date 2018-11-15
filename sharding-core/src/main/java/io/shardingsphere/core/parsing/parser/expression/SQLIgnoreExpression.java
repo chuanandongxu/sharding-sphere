@@ -22,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Ignored expression when SQL parsing.
- *
+ * SQLIgnoreExpression	分片中无需关注的SQL表达式	无
+ * SELECT * FROM t_order o ORDER BY o.order_id % 2 中的o.order_id%2
+ * 复合表达式都会解析成 SQLIgnoreExpression。
  * @author zhangliang
  */
 @RequiredArgsConstructor

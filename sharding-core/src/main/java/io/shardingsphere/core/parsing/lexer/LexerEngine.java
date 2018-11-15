@@ -42,7 +42,9 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 public final class LexerEngine {
-    
+    /**
+     * 词法解析器
+     */
     private final Lexer lexer;
     
     /**
@@ -81,29 +83,32 @@ public final class LexerEngine {
     
     /**
      * skip all tokens that inside parentheses.
-     *
+     * 跳过小括号内所有的词法标记.
      * @param sqlStatement SQL statement
      * @return skipped string
      */
     public String skipParentheses(final SQLStatement sqlStatement) {
         StringBuilder result = new StringBuilder("");
         int count = 0;
+        /** 如果当前token为左括号 */
         if (Symbol.LEFT_PAREN == lexer.getCurrentToken().getType()) {
             final int beginPosition = lexer.getCurrentToken().getEndPosition();
             result.append(Symbol.LEFT_PAREN.getLiterals());
+            // 获取下一token
             lexer.nextToken();
             while (true) {
+                // 如果是？号，增加解析索引
                 if (equalAny(Symbol.QUESTION)) {
                     sqlStatement.increaseParametersIndex();
-                }
+                }//  到达结尾 或者 匹配合适的)右括号
                 if (Assist.END == lexer.getCurrentToken().getType() || (Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType() && 0 == count)) {
                     break;
-                }
+                }/** 处理里面有多个括号的情况，例如：SELECT COUNT(DISTINCT(order_id) FROM t_order */
                 if (Symbol.LEFT_PAREN == lexer.getCurrentToken().getType()) {
                     count++;
                 } else if (Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType()) {
                     count--;
-                }
+                }/** 解析下一个token */
                 lexer.nextToken();
             }
             result.append(lexer.getInput().substring(beginPosition, lexer.getCurrentToken().getEndPosition()));
@@ -131,6 +136,7 @@ public final class LexerEngine {
      * @return current token equals one of input tokens or not
      */
     public boolean equalAny(final TokenType... tokenTypes) {
+        // 循环所有的不支持项，判断是否跟当前token的类型相同，相同返回true
         for (TokenType each : tokenTypes) {
             if (each == lexer.getCurrentToken().getType()) {
                 return true;
@@ -141,7 +147,7 @@ public final class LexerEngine {
     
     /**
      * Skip current token if equals one of input tokens.
-     *
+     * 跳过指定的token类型
      * @param tokenTypes to be adjusted token types
      * @return skipped current token or not
      */
@@ -180,11 +186,13 @@ public final class LexerEngine {
     
     /**
      * Throw unsupported exception if current token equals one of input tokens.
-     * 
+     * 抛出不支持语句异常
      * @param tokenTypes to be adjusted token types
      */
     public void unsupportedIfEqual(final TokenType... tokenTypes) {
+        // 判断当前token是否包含在不支持项中
         if (equalAny(tokenTypes)) {
+            // 抛出不支持异常
             throw new SQLParsingUnsupportedException(lexer.getCurrentToken().getType());
         }
     }

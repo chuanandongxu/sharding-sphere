@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Placeholder expression.
- *
+ * 占位符表达式  对应token为  Symbol.QUESTION
  * @author zhangliang
  */
 @RequiredArgsConstructor

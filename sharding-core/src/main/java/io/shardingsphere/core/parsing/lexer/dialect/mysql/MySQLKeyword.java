@@ -25,7 +25,9 @@ import io.shardingsphere.core.parsing.lexer.token.Keyword;
  * @author zhangliang 
  */
 public enum MySQLKeyword implements Keyword {
-    
+    /**
+     * mysql 关键词
+     */
     SHOW, 
     DESCRIBE, 
     DATABASES, 

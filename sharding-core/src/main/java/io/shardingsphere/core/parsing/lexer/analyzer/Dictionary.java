@@ -30,27 +30,48 @@ import java.util.Map;
  * @author zhangliang
  */
 public final class Dictionary {
-    
+    /**
+     * 词法关键词map
+     */
     private final Map<String, Keyword> tokens = new HashMap<>(1024);
-    
+
     public Dictionary(final Keyword... dialectKeywords) {
         fill(dialectKeywords);
     }
-    
+
+    /**
+     * 装上默认词法关键词 + 方言词法关键词
+     * 不同的数据库有相同的默认词法关键词，有不同的方言关键词
+     *
+     * @param dialectKeywords
+     */
     private void fill(final Keyword... dialectKeywords) {
+        // 默认关键词
         for (DefaultKeyword each : DefaultKeyword.values()) {
             tokens.put(each.name(), each);
         }
+        // 方言关键词
         for (Keyword each : dialectKeywords) {
             tokens.put(each.toString(), each);
         }
     }
-    
+
+    /**
+     * 判断是否包含关键词，包含则返回，不包含则使用默认的
+     * @param literals
+     * @param defaultTokenType
+     * @return
+     */
     TokenType findTokenType(final String literals, final TokenType defaultTokenType) {
         String key = null == literals ? null : literals.toUpperCase();
         return tokens.containsKey(key) ? tokens.get(key) : defaultTokenType;
     }
-    
+
+    /**
+     * 根据标志符获取词法标记类型
+     * @param literals
+     * @return
+     */
     TokenType findTokenType(final String literals) {
         String key = null == literals ? null : literals.toUpperCase();
         if (tokens.containsKey(key)) {

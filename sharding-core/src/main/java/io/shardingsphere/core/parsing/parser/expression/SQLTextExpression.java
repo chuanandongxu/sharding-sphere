@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Text expression.
- *
+ * SQLTextExpression	字符表达式	Literals.CHARS
  * @author zhangliang
  */
 @RequiredArgsConstructor

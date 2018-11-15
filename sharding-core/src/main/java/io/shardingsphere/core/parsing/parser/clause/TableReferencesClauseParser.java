@@ -179,7 +179,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     
     /**
      * Parse single table without alias.
-     *
+     * 解析单表
      * @param sqlStatement SQL statement
      */
     public final void parseSingleTableWithoutAlias(final SQLStatement sqlStatement) {

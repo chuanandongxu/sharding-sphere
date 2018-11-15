@@ -58,7 +58,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * SQL parser factory.
- *
+ * SQL解析器工厂
  * @author zhangliang
  * @author panjuan
  */
@@ -67,7 +67,7 @@ public final class SQLParserFactory {
     
     /**
      * Create SQL parser.
-     *
+     * 根据类型创建不同SQL类型的解析器
      * @param dbType database type
      * @param tokenType token type
      * @param shardingRule databases and tables sharding rule
@@ -77,30 +77,45 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(
             final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        // 查询语句SQL解析器
         if (DQLStatement.isDQL(tokenType)) {
             return getDQLParser(dbType, shardingRule, lexerEngine, shardingTableMetaData);
-        }
+        }// DML 语句解析器
         if (DMLStatement.isDML(tokenType)) {
             return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
-        }
+        }// TCL 语句解析器
         if (TCLStatement.isTCL(tokenType)) {
             return getTCLParser(dbType, shardingRule, lexerEngine);
-        }
+        }// DAL 语句解析器
         if (DALStatement.isDAL(tokenType)) {
             return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
         }
+        /** 获取下一个分词 */
         lexerEngine.nextToken();
+        /** 获取下一个分词的token类型 */
         TokenType secondaryTokenType = lexerEngine.getCurrentToken().getType();
+        /** 根据当前分词类型和下一个分词类型进行判断*/
+        // DDL 语句解析器
         if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
             return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
-        }
+        }// DCL 语句解析器
         if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
             return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
         }
+        // 抛出不支持SQL语句异常
         throw new SQLParsingUnsupportedException(tokenType);
     }
-    
+
+    /**
+     * DQL 语句解析器（不同数据库不一样）
+     * @param dbType
+     * @param shardingRule
+     * @param lexerEngine
+     * @param shardingTableMetaData
+     * @return
+     */
     private static SQLParser getDQLParser(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        /** 创建DQL 语句解析器*/
         return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingTableMetaData);
     }
     
@@ -169,7 +184,15 @@ public final class SQLParserFactory {
         }
         throw new SQLParsingUnsupportedException(tokenType);
     }
-    
+
+    /**
+     * 创建DCL SQL解析器
+     * @param dbType
+     * @param tokenType
+     * @param shardingRule
+     * @param lexerEngine
+     * @return
+     */
     private static SQLParser getDCLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         switch ((DefaultKeyword) tokenType) {
             case CREATE:

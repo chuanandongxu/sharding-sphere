@@ -59,30 +59,42 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     /**
      * Parse select list.
-     * 
+     *  解析select a,b,c
      * @param selectStatement select statement
      * @param items select items
      */
     public void parse(final SelectStatement selectStatement, final List<SelectItem> items) {
         do {
+            /** 解析单个选择项目 */
             selectStatement.getItems().add(parseSelectItem(selectStatement));
+            /** 跳过 , */
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+        /** 设置 最后一个查询项下一个 Token 的开始位置*/
         selectStatement.setSelectListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
         items.addAll(selectStatement.getItems());
     }
-    
+
+    /**
+     * 解析单个选择项目 select a,b,c 中a
+     * @param selectStatement
+     * @return
+     */
     private SelectItem parseSelectItem(final SelectStatement selectStatement) {
+        /** 跳过指定token类型 */
         lexerEngine.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
         SelectItem result;
+        // 始终返回false
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem(selectStatement);
+            /** 如果选择项为*  */
         } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
             result = parseStarSelectItem();
+            /** 如果是聚合函数 */
         } else if (isAggregationSelectItem()) {
             result = parseAggregationSelectItem(selectStatement);
             parseRestSelectItem(selectStatement);
-        } else {
+        } else {/** 调用普通的解析方法 */
             result = parseCommonOrStarSelectItem(selectStatement);
         }
         return result;
@@ -93,7 +105,11 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     protected abstract boolean isRowNumberSelectItem();
     
     protected abstract SelectItem parseRowNumberSelectItem(SelectStatement selectStatement);
-    
+
+    /**
+     * 判断选择项是否为*
+     * @return
+     */
     private boolean isStarSelectItem() {
         return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()));
     }
@@ -109,7 +125,12 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         aliasExpressionParser.parseSelectItemAlias();
         return new StarSelectItem(Optional.fromNullable(owner));
     }
-    
+
+    /**
+     * 非 * 通用选择项
+     * @param selectStatement
+     * @return
+     */
     private SelectItem parseCommonOrStarSelectItem(final SelectStatement selectStatement) {
         String literals = lexerEngine.getCurrentToken().getLiterals();
         int position = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
@@ -135,11 +156,20 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
                 + parseRestSelectItem(selectStatement)), aliasExpressionParser.parseSelectItemAlias());
         
     }
-    
+
+    /**
+     * 是否包含聚合函数
+     * @return
+     */
     private boolean isAggregationSelectItem() {
         return lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
     }
-    
+
+    /**
+     * 聚合选择项
+     * @param selectStatement
+     * @return
+     */
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
         lexerEngine.nextToken();

@@ -38,7 +38,7 @@ public final class SelectParserFactory {
     
     /**
      * Create select parser instance.
-     *
+     * 创建select解析器，不同数据库创建不同的SQL解析器
      * @param dbType database type
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine.
@@ -48,6 +48,7 @@ public final class SelectParserFactory {
     public static AbstractSelectParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
         switch (dbType) {
             case H2:
+            /** MySql的select语句解析器 */
             case MySQL:
                 return new MySQLSelectParser(shardingRule, lexerEngine, shardingTableMetaData);
             case Oracle:

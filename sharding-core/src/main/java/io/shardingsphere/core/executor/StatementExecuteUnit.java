@@ -21,8 +21,6 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -40,12 +38,9 @@ public final class StatementExecuteUnit {
     
     private final ConnectionMode connectionMode;
     
-    private final DatabaseMetaData databaseMetaData;
-    
-    public StatementExecuteUnit(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+    public StatementExecuteUnit(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) {
         this.routeUnit = routeUnit;
         this.statement = statement;
         this.connectionMode = connectionMode;
-        this.databaseMetaData = statement.getConnection().getMetaData();
     }
 }

@@ -28,7 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum ShardingOperator {
-    
+    /**
+     * 分片操作类型
+     */
     EQUAL("="), 
     BETWEEN("BETWEEN"), 
     IN("IN");

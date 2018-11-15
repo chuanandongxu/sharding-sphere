@@ -15,19 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
+package io.shardingsphere.core.event;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DDLStatementExtractor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.ServiceLoader;
 
 /**
- * Oracle drop index statement extractor.
- * 
- * @author duhongjun
+ * Sharding event listener registry SPI loader.
+ *
+ * @author zhangliang
  */
-public final class OracleDropIndexExtractor extends DDLStatementExtractor {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingEventListenerRegistrySPILoader {
     
-    public OracleDropIndexExtractor() {
-        addExtractHandler(new IndexNameExtractHandler());
+    /**
+     * Register event listeners.
+     */
+    public static void registerListeners() {
+        for (ShardingEventListenerRegistry each : ServiceLoader.load(ShardingEventListenerRegistry.class)) {
+            each.register();
+        }
     }
 }

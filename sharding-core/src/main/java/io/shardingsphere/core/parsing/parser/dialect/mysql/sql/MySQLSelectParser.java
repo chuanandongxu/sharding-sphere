@@ -32,35 +32,66 @@ import io.shardingsphere.core.rule.ShardingRule;
  * @author zhangliang
  */
 public final class MySQLSelectParser extends AbstractSelectParser {
-    
+    /**
+     * option解析
+     */
     private final MySQLSelectOptionClauseParser selectOptionClauseParser;
-    
+    /**
+     * limit解析
+     */
     private final MySQLLimitClauseParser limitClauseParser;
-    
+
+    /**
+     * 构造函数
+     * @param shardingRule
+     * @param lexerEngine
+     * @param shardingTableMetaData
+     */
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
         super(shardingRule, lexerEngine, new MySQLSelectClauseParserFacade(shardingRule, lexerEngine), shardingTableMetaData);
         selectOptionClauseParser = new MySQLSelectOptionClauseParser(lexerEngine);
         limitClauseParser = new MySQLLimitClauseParser(lexerEngine);
     }
-    
+
+    /**
+     * 解析select SQL语句
+     * @param selectStatement
+     */
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
+        // 解析distinct
         parseDistinct();
+        // 解析option从句
         parseSelectOption();
+        // 解析select 列表
         parseSelectList(selectStatement, getItems());
+        // 解析from
         parseFrom(selectStatement);
+        // 解析where
         parseWhere(getShardingRule(), selectStatement, getItems());
+        // 解析group by
         parseGroupBy(selectStatement);
+        // 解析having
         parseHaving();
+        // 解析order by
         parseOrderBy(selectStatement);
+        // 解析limit
         parseLimit(selectStatement);
+        // 解析Union except等
         parseSelectRest();
     }
-    
+
+    /**
+     * 解析option
+     */
     private void parseSelectOption() {
         selectOptionClauseParser.parse();
     }
-    
+
+    /**
+     * 解析limit
+     * @param selectStatement
+     */
     private void parseLimit(final SelectStatement selectStatement) {
         limitClauseParser.parse(selectStatement);
     }

@@ -31,7 +31,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public enum Symbol implements TokenType, Keyword {
-    
+    /**
+     * 词法符号标记
+     */
     LEFT_PAREN("("),
     RIGHT_PAREN(")"),
     LEFT_BRACE("{"),

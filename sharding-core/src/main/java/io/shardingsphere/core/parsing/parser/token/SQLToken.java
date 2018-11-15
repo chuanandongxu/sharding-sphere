@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * SQL Token.
- *
+ * SQL标记对象接口，SQL 改写时使用到
  * @author zhangliang
  */
 @RequiredArgsConstructor

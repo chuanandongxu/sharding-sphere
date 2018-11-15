@@ -55,7 +55,7 @@ import java.util.List;
 
 /**
  * Where clause parser.
- *
+ * 解析所有查询条件
  * @author zhangliang
  * @author maxiaoguang
  */
@@ -96,7 +96,14 @@ public abstract class WhereClauseParser implements SQLClauseParser {
             sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
         }
     }
-    
+
+    /**
+     * 解析or
+     * @param shardingRule
+     * @param sqlStatement
+     * @param items
+     * @return
+     */
     private OrCondition parseOr(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         OrCondition result = new OrCondition();
         do {
@@ -115,7 +122,14 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         } while (lexerEngine.skipIfEqual(DefaultKeyword.OR));
         return result;
     }
-    
+
+    /**
+     * 解析and
+     * @param shardingRule
+     * @param sqlStatement
+     * @param items
+     * @return
+     */
     private OrCondition parseAnd(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         OrCondition result = new OrCondition();
         do {
@@ -158,7 +172,14 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         }
         return result.optimize();
     }
-    
+
+    /**
+     * 解析单个查询条件
+     * @param shardingRule
+     * @param sqlStatement
+     * @param items
+     * @return
+     */
     private Condition parseComparisonCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         Condition result;
         SQLExpression left = basicExpressionParser.parse(sqlStatement);
@@ -205,9 +226,19 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         }
         return result;
     }
-    
+
+    /**
+     * 解析 = 条件
+     * #parseEqualCondition() 解析到 右SQL表达式(right)，并判断 左右SQL表达式 与路由逻辑是否有影响，如果有，则加入到
+     * Condition。这个就是 #parseWhere() 的目的：解析 WHERE 查询条件对路由有影响的条件。
+     * @param shardingRule
+     * @param sqlStatement
+     * @param left
+     * @return
+     */
     private Condition parseEqualCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         SQLExpression right = basicExpressionParser.parse(sqlStatement);
+        // 添加列
         // TODO if have more tables, and cannot find column belong to, should not add to condition, should parse binding table rule.
         if (!sqlStatement.getTables().isSingleTable() && !(left instanceof SQLPropertyExpression)) {
             return new NullCondition();

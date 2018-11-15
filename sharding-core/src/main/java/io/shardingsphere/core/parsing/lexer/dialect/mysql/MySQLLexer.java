@@ -26,23 +26,42 @@ import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
  * @author zhangliang
  */
 public final class MySQLLexer extends Lexer {
-    
+    /**
+     * 根据枚举创建字典
+     */
     private static Dictionary dictionary = new Dictionary(MySQLKeyword.values());
-    
+
+    /**
+     * 通过构造创建词法解析器对象
+     * @param input
+     */
     public MySQLLexer(final String input) {
         super(input, dictionary);
     }
-    
+
+    /**
+     * 重写isHintBegin方法
+     *  /*! ---> 开头表示hint sql
+     * @return
+     */
     @Override
     protected boolean isHintBegin() {
         return '/' == getCurrentChar(0) && '*' == getCurrentChar(1) && '!' == getCurrentChar(2);
     }
-    
+
+    /**
+     * # // -- /* 这四种表示注释
+     * @return
+     */
     @Override
     protected boolean isCommentBegin() {
         return '#' == getCurrentChar(0) || super.isCommentBegin();
     }
-    
+
+    /**
+     * @ 开头表示是变量
+     * @return
+     */
     @Override
     protected boolean isVariableBegin() {
         return '@' == getCurrentChar(0);

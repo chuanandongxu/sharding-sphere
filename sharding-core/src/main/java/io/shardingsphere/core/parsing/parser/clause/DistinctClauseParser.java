@@ -40,12 +40,18 @@ public abstract class DistinctClauseParser implements SQLClauseParser {
      * Parse distinct.
      */
     public final void parse() {
+        // 跳过指定的token 跳过all
         lexerEngine.skipAll(DefaultKeyword.ALL);
         Collection<Keyword> distinctKeywords = new LinkedList<>();
+        // 关键词中加入distinct
         distinctKeywords.add(DefaultKeyword.DISTINCT);
         distinctKeywords.addAll(Arrays.asList(getSynonymousKeywordsForDistinct()));
         lexerEngine.unsupportedIfEqual(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]));
     }
-    
+
+    /**
+     * 不同数据不同是实现 返回Distinct keyword
+     * @return
+     */
     protected abstract Keyword[] getSynonymousKeywordsForDistinct();
 }

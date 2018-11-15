@@ -15,30 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl;
+package io.shardingsphere.core.yaml;
 
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Record alter table column position.
- * 
- * @author duhongjun
+ * Rule configuration for yaml.
+ *
+ * @author panjuan
  */
 @Getter
 @Setter
-public final class ColumnPosition implements Comparable<ColumnPosition> {
+public final class YamlRuleConfiguration {
     
-    private int startIndex;
+    private YamlShardingRuleConfiguration shardingRule;
     
-    private String firstColumn;
-    
-    private String columnName;
-    
-    private String afterColumn;
-    
-    @Override
-    public int compareTo(final ColumnPosition o) {
-        return null == o ? -1 : startIndex - o.startIndex;
-    }
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
 }

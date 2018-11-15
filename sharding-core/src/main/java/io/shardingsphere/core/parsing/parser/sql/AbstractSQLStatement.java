@@ -41,16 +41,27 @@ import java.util.List;
 @Setter
 @ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
-    
+
+    /**
+     * sql 类型
+     */
     private final SQLType type;
-    
+    /**
+     * 表
+     */
     private final Tables tables = new Tables();
-    
+    /**
+     * 过滤条件，只有对路由有影响的条件才添加进数组
+     */
     private final Conditions conditions = new Conditions();
-    
+    /**
+     * sql标记对象
+     */
     @Getter(AccessLevel.NONE)
     private final List<SQLToken> sqlTokens = new LinkedList<>();
-    
+    /**
+     * 参数位置
+     */
     private int parametersIndex;
     
     @Override

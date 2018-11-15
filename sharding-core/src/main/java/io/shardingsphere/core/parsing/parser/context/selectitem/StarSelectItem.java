@@ -36,7 +36,11 @@ import lombok.ToString;
 public final class StarSelectItem implements SelectItem {
     
     private final Optional<String> owner;
-    
+
+    /**
+     * a.* 或 *
+     * @return
+     */
     @Override
     public String getExpression() {
         return owner.isPresent() ? owner.get() + "." + Symbol.STAR.getLiterals() : Symbol.STAR.getLiterals();

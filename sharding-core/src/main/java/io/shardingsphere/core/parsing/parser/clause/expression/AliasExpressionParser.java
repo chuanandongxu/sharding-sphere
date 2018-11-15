@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Alias expression parser.
- *
+ * 解析别名.不仅仅是字段的别名，也可以是表的别名。
  * @author zhangliang
  * @author maxiaoguang
  */
@@ -45,22 +45,39 @@ public abstract class AliasExpressionParser {
      * @return alias for select item
      */
     public Optional<String> parseSelectItemAlias() {
+        /** 如果是as则跳过 */
         if (lexerEngine.skipIfEqual(DefaultKeyword.AS)) {
             return parseWithAs(null, false, null);
         }
+        /** 解析别名 */
         if (lexerEngine.equalAny(getDefaultAvailableKeywordsForSelectItemAlias()) || lexerEngine.equalAny(getCustomizedAvailableKeywordsForSelectItemAlias())) {
             return parseAlias(null, false, null);
         }
         return Optional.absent();
     }
-    
+
+    /**
+     * 解析带 as 的情况
+     * @param sqlStatement
+     * @param setTableToken
+     * @param tableName
+     * @return
+     */
     private Optional<String> parseWithAs(final SQLStatement sqlStatement, final boolean setTableToken, final String tableName) {
+        /** 如果是符号直接返回 **/
         if (lexerEngine.equalAny(Symbol.values())) {
             return Optional.absent();
         }
         return parseAlias(sqlStatement, setTableToken, tableName);
     }
-    
+
+    /**
+     * 解析带 as 的情况
+     * @param sqlStatement
+     * @param setTableToken
+     * @param tableName
+     * @return
+     */
     private Optional<String> parseAlias(final SQLStatement sqlStatement, final boolean setTableToken, final String tableName) {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         String literals = lexerEngine.getCurrentToken().getLiterals();
