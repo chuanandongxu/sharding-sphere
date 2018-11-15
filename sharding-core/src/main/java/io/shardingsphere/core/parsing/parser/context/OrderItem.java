@@ -26,7 +26,7 @@ import lombok.ToString;
 
 /**
  * Order item.
- *
+ * 排序项
  * @author zhangliang
  */
 @Getter
@@ -34,17 +34,30 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public final class OrderItem {
-    
+    /**
+     * 所属表名
+     */
     private final Optional<String> owner;
-    
+    /**
+     * 排序字段
+     */
     private final Optional<String> name;
-    
+    /**
+     * 排序类型 dec asc
+     */
     private final OrderDirection orderDirection;
-    
+    /**
+     * 没有排序类型
+     */
     private final OrderDirection nullOrderDirection;
-    
+    /**
+     * 按照第几个查询字段排序
+     *    ORDER BY 数字 的 数字代表的是第几个字段
+     */
     private int index = -1;
-    
+    /**
+     * 字段在查询项({@link com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem} 的别名
+     */
     private Optional<String> alias;
     
     public OrderItem(final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection, final Optional<String> alias) {

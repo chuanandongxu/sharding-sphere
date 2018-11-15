@@ -26,7 +26,9 @@ import lombok.Getter;
  */
 @Getter
 public final class RowCountToken extends SQLToken {
-    
+    /**
+     * 行数
+     */
     private final int rowCount;
     
     public RowCountToken(final int beginPosition, final int rowCount) {

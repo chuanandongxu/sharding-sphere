@@ -50,9 +50,15 @@ public abstract class OrderByClauseParser implements SQLClauseParser {
     
     @Getter
     private final LexerEngine lexerEngine;
-    
+    /**
+     * 解析表达式的对象
+     */
     private final BasicExpressionParser basicExpressionParser;
-    
+
+    /**
+     * 创建解析表达式的对象
+     * @param lexerEngine
+     */
     public OrderByClauseParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
         basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
@@ -64,49 +70,60 @@ public abstract class OrderByClauseParser implements SQLClauseParser {
      * @param selectStatement select statement
      */
     public final void parse(final SelectStatement selectStatement) {
+        /** 如果是ORDER 则直接返回 */
         if (!lexerEngine.skipIfEqual(DefaultKeyword.ORDER)) {
             return;
         }
         List<OrderItem> result = new LinkedList<>();
+
         lexerEngine.skipIfEqual(OracleKeyword.SIBLINGS);
+        /** 判断是否是by 并且调到下一个token **/
         lexerEngine.accept(DefaultKeyword.BY);
         do {
             Optional<OrderItem> orderItem = parseSelectOrderByItem(selectStatement);
             if (orderItem.isPresent()) {
                 result.add(orderItem.get());
-            }
+            }/** 如果是 , 则解析每一个字段 */
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         selectStatement.getOrderByItems().addAll(result);
     }
-    
+
+    /**
+     * 解析order by a,b,c 中的a,b,c
+     * @param selectStatement
+     * @return
+     */
     private Optional<OrderItem> parseSelectOrderByItem(final SelectStatement selectStatement) {
+        /** 解析该表达式 **/
         SQLExpression sqlExpression = basicExpressionParser.parse(selectStatement);
+        /** 获取排序类型 */
         OrderDirection orderDirection = OrderDirection.ASC;
         if (lexerEngine.skipIfEqual(DefaultKeyword.ASC)) {
             orderDirection = OrderDirection.ASC;
         } else if (lexerEngine.skipIfEqual(DefaultKeyword.DESC)) {
             orderDirection = OrderDirection.DESC;
         }
+        /** 字符表达式 */
         if (sqlExpression instanceof SQLTextExpression) {
             return Optional.of(new OrderItem(SQLUtil.getExactlyValue(((SQLTextExpression) sqlExpression).getText()), orderDirection, getNullOrderDirection()));
-        }
+        }/** 如果是数字表达式 */
         if (sqlExpression instanceof SQLNumberExpression) {
             return Optional.of(new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderDirection, getNullOrderDirection()));
-        }
+        }/** 标识表达式 */
         if (sqlExpression instanceof SQLIdentifierExpression) {
             return Optional.of(new OrderItem(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()),
                     orderDirection, getNullOrderDirection(), selectStatement.getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()))));
-        }
+        }/** 属性表达式 */
         if (sqlExpression instanceof SQLPropertyExpression) {
             SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
             return Optional.of(
                 new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderDirection, getNullOrderDirection(),
                     selectStatement.getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()))));
-        }
+        }/** 忽略的表达式 */
         if (sqlExpression instanceof SQLIgnoreExpression) {
             SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
             return Optional.of(new OrderItem(sqlIgnoreExpression.getExpression(), orderDirection, getNullOrderDirection(), selectStatement.getAlias(sqlIgnoreExpression.getExpression())));
-        }
+        }/** 占位符表达式 */
         if (sqlExpression instanceof SQLPlaceholderExpression) {
             return Optional.absent();
         }

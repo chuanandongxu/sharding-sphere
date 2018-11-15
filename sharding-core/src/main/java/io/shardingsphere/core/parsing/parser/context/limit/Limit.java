@@ -42,7 +42,9 @@ public final class Limit {
     private final DatabaseType databaseType;
     
     private LimitValue offset;
-    
+    /**
+     * row
+     */
     private LimitValue rowCount;
     
     /**

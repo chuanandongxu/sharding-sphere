@@ -92,7 +92,7 @@ public class ShardingRule {
     
     /**
      * Try to find table rule though logic table name.
-     *
+     * 通过逻辑表名获取分表规则
      * @param logicTableName logic table name
      * @return table rule
      */

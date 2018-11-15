@@ -227,7 +227,7 @@ public final class SelectStatement extends DQLStatement {
     
     /**
      * Set sub query statement.
-     * 
+     *  设置子查询语句
      * @param subQueryStatement sub query statement
      */
     public void setSubQueryStatement(final SelectStatement subQueryStatement) {

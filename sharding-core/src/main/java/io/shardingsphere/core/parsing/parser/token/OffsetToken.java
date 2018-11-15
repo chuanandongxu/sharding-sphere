@@ -26,7 +26,9 @@ import lombok.Getter;
  */
 @Getter
 public final class OffsetToken extends SQLToken {
-    
+    /**
+     * 偏移值
+     */
     private final int offset;
     
     public OffsetToken(final int beginPosition, final int offset) {

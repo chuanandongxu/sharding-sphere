@@ -38,9 +38,11 @@ public abstract class SelectRestClauseParser implements SQLClauseParser {
     
     /**
      * Parse select rest.
+     * 解析剩余的表达式
      */
     public final void parse() {
         Collection<Keyword> unsupportedRestKeywords = new LinkedList<>();
+        /** 不支持Union intersect except minus */
         unsupportedRestKeywords.addAll(Arrays.asList(DefaultKeyword.UNION, DefaultKeyword.INTERSECT, DefaultKeyword.EXCEPT, DefaultKeyword.MINUS));
         unsupportedRestKeywords.addAll(Arrays.asList(getUnsupportedKeywordsRest()));
         lexerEngine.unsupportedIfEqual(unsupportedRestKeywords.toArray(new Keyword[unsupportedRestKeywords.size()]));

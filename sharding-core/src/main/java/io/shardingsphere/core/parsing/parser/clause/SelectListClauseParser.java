@@ -136,9 +136,13 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         int position = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
         StringBuilder result = new StringBuilder();
         result.append(literals);
+        /** 获取下一个token */
         lexerEngine.nextToken();
+        /** 如果是 ( */
         if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
+            /** 跳过小括号内所有的词法标记 */
             result.append(lexerEngine.skipParentheses(selectStatement));
+            /** 如果是 .  */
         } else if (lexerEngine.equalAny(Symbol.DOT)) {
             String tableName = SQLUtil.getExactlyValue(literals);
             if (shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {

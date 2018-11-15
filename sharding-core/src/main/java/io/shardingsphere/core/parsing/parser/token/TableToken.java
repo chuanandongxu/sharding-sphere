@@ -29,9 +29,14 @@ import lombok.ToString;
 @Getter
 @ToString
 public final class TableToken extends SQLToken {
-    
+    /**
+     * schema.table1  schema的长度
+     */
     private final int skippedSchemaNameLength;
-    
+
+    /**
+     * 表达式
+     */
     private final String originalLiterals;
     
     public TableToken(final int beginPosition, final int skippedSchemaNameLength, final String originalLiterals) {
@@ -42,7 +47,7 @@ public final class TableToken extends SQLToken {
     
     /**
      * Get table name.
-     * 
+     * 获取表名
      * @return table name
      */
     public String getTableName() {

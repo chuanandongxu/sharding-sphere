@@ -26,7 +26,10 @@ import java.util.List;
 
 /**
  * Select items token.
- *
+ * 选择项标记对象，属于分片上下文信息，目前有 3 个情况会创建：
+ * AVG 查询额外 COUNT 和 SUM：#appendAvgDerivedColumns()
+ * GROUP BY 不在 查询字段，额外查询该字段 ：#appendDerivedOrderColumns()
+ * ORDER BY 不在 查询字段，额外查询该字段 ：#appendDerivedOrderColumns()
  * @author zhangliang
  * @author panjuan
  */
@@ -36,7 +39,9 @@ public final class ItemsToken extends SQLToken {
     
     @Setter
     private boolean isFirstOfItemsSpecial;
-    
+    /**
+     * 字段名数组
+     */
     private final List<String> items = new LinkedList<>();
     
     public ItemsToken(final int beginPosition) {

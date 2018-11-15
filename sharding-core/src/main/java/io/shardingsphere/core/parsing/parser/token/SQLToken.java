@@ -28,7 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public abstract class SQLToken implements Comparable<SQLToken> {
-    
+    /**
+     * SQL 开始的位置
+     */
     private final int beginPosition;
     
     @Override
