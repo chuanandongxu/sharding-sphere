@@ -33,7 +33,10 @@ import java.util.List;
  */
 @ToString
 public final class Tables {
-    
+
+    /**
+     * 表名列表
+     */
     private final List<Table> tables = new ArrayList<>();
     
     /**
@@ -64,7 +67,7 @@ public final class Tables {
     }
     
     /**
-     * 获取表名称.
+     * 获取表名称（只返回第一个表名）.
      *
      * @return 表名称
      */

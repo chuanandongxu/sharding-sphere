@@ -79,7 +79,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
 
     /**
      * Parse table references.
-     *
+     * 解析表名
      * @param sqlStatement SQL statement
      * @param isSingleTableOnly is parse single table only
      */
@@ -110,6 +110,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         }
         parseForceIndex(tableName, sqlStatement);
         parseJoinTable(sqlStatement);
+        /** 不支持多表 */
         if (isSingleTableOnly && !sqlStatement.getTables().isSingleTable()) {
             throw new SQLParsingUnsupportedException("Cannot support Multiple-Table.");
         }

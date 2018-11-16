@@ -26,18 +26,24 @@ import java.util.List;
 
 /**
  * Generated key condition.
- * 
+ * 自动生成键，属于分片上下文信息。
  * @author zhangliang
  * @author maxiaoguang
  */
 @Getter
 @ToString
 public final class GeneratedKeyCondition extends Condition {
-    
+    /**
+     * 字段名
+     */
     private final Column column;
-    
+    /**
+     * 第几个站位符
+     */
     private final int index;
-    
+    /**
+     * 值
+     */
     private final Number value;
     
     public GeneratedKeyCondition(final Column column, final int index, final Number value) {

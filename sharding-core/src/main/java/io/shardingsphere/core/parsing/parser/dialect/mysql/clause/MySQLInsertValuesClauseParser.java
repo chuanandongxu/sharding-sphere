@@ -33,7 +33,11 @@ public final class MySQLInsertValuesClauseParser extends InsertValuesClauseParse
     public MySQLInsertValuesClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
-    
+
+    /**
+     * 同义词 mysql中 values和value具有相同的作用
+     * @return
+     */
     @Override
     protected Keyword[] getSynonymousKeywordsForValues() {
         return new Keyword[] {MySQLKeyword.VALUE};

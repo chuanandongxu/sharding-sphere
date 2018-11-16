@@ -33,12 +33,21 @@ public final class MySQLInsertIntoClauseParser extends InsertIntoClauseParser {
     public MySQLInsertIntoClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(lexerEngine, new MySQLTableReferencesClauseParser(shardingRule, lexerEngine));
     }
-    
+
+    /**
+     * 获取insert into 不支持的关键字
+     * @return
+     */
     @Override
     protected Keyword[] getUnsupportedKeywordsBeforeInto() {
+        /** Keyword[0] 代表的关键字 show、schema*/
         return new Keyword[0];
     }
-    
+
+    /**
+     * 获取要跳过的在表名和值之间的关键字 partition
+     * @return
+     */
     @Override
     protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
         return new Keyword[] {MySQLKeyword.PARTITION};

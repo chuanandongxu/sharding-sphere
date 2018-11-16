@@ -42,18 +42,30 @@ public abstract class InsertIntoClauseParser implements SQLClauseParser {
      * @param insertStatement insert statement
      */
     public void parse(final InsertStatement insertStatement) {
+        /** 解析不支持项 */
         lexerEngine.unsupportedIfEqual(getUnsupportedKeywordsBeforeInto());
+        /** 找到 into 关键字 */
         lexerEngine.skipUntil(DefaultKeyword.INTO);
         lexerEngine.nextToken();
+        /** 解析表名 */
         tableReferencesClauseParser.parse(insertStatement, true);
+        /** 忽略在表名和 value之间的关键字
+         * 例如 MySQL ：[PARTITION (partition_name,...)]
+         */
         skipBetweenTableAndValues(insertStatement);
     }
-    
+
+    /**
+     * 获取insert into 不支持的关键字
+     * @return
+     */
     protected abstract Keyword[] getUnsupportedKeywordsBeforeInto();
     
     private void skipBetweenTableAndValues(final InsertStatement insertStatement) {
+        /** 跳过partition 关键字 */
         while (lexerEngine.skipIfEqual(getSkippedKeywordsBetweenTableAndValues())) {
             lexerEngine.nextToken();
+            /** 若果是 ( ,跳过小括号内所有的词法标记*/
             if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
                 lexerEngine.skipParentheses(insertStatement);
             }

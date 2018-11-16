@@ -68,14 +68,17 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
     
     /**
      * Parse insert values.
-     *
+     * 解析 values关键词
      * @param insertStatement insert statement
      */
     public void parse(final InsertStatement insertStatement) {
         Collection<Keyword> valueKeywords = new LinkedList<>();
         valueKeywords.add(DefaultKeyword.VALUES);
+        /** 加入同义词 value */
         valueKeywords.addAll(Arrays.asList(getSynonymousKeywordsForValues()));
+        /** 跳过values或value 解析后面要插入的值 */
         if (lexerEngine.skipIfEqual(valueKeywords.toArray(new Keyword[valueKeywords.size()]))) {
+            // 解析要插入的值
             parseValues(insertStatement);
         }
     }
@@ -84,7 +87,7 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
     
     /**
      * Parse insert values.
-     *
+     * 解析要插入的值
      * @param insertStatement insert statement
      */
     private void parseValues(final InsertStatement insertStatement) {
@@ -95,55 +98,80 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
         do {
             beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             startParametersIndex = insertStatement.getParametersIndex();
+            /** 判断当前token是否是 ( */
             lexerEngine.accept(Symbol.LEFT_PAREN);
             List<SQLExpression> sqlExpressions = new LinkedList<>();
             int count = 0;
             do {
                 sqlExpressions.add(basicExpressionParser.parse(insertStatement));
+                /** 跳过 :: */
                 skipsDoubleColon();
                 count++;
+                /** 按照 , 进行分割 */
             } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+            // 移除自增主键
             removeGenerateKeyColumn(insertStatement, count);
             count = 0;
             AndCondition andCondition = new AndCondition();
+            /** 循环所有的列 */
             for (Column each : insertStatement.getColumns()) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
+                /** 判断是否是分片键 */
                 if (shardingRule.isShardingColumn(each)) {
+                    /** 分片键只支持 数字表达式 字符表达式 占位符 */
                     if (!(sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression || sqlExpression instanceof SQLPlaceholderExpression)) {
                         throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", each.getName());
                     }
                     andCondition.getConditions().add(new Condition(each, sqlExpression));
                 }
+                /** 创建自动生成主键 */
                 if (insertStatement.getGenerateKeyColumnIndex() == count) {
                     insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(each, sqlExpression));
                 }
                 count++;
             }
             endPosition = lexerEngine.getCurrentToken().getEndPosition();
+            /** 判断当前token是否是 ) */
             lexerEngine.accept(Symbol.RIGHT_PAREN);
             InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, lexerEngine.getInput().substring(beginPosition, endPosition), insertStatement.getParametersIndex() - startParametersIndex);
             insertStatement.getInsertValues().getInsertValues().add(insertValue);
             insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition);
+            /** 按照 , 进行分割 */
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         insertStatement.setInsertValuesListLastPosition(endPosition);
     }
-    
+
+    /**
+     * 如果配置中存在自增主键，则移除自增主键的值
+     * @param insertStatement
+     * @param valueCount
+     */
     private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valueCount) {
+        /** 从配置中获取自增主键 */
         Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
         if (generateKeyColumn.isPresent() && valueCount < insertStatement.getColumns().size()) {
             List<ItemsToken> itemsTokens = insertStatement.getItemsTokens();
             insertStatement.getColumns().remove(new Column(generateKeyColumn.get().getName(), insertStatement.getTables().getSingleTableName()));
             for (ItemsToken each : itemsTokens) {
+                /** 从数组中移除 自增主键 **/
                 each.getItems().remove(generateKeyColumn.get().getName());
                 insertStatement.setGenerateKeyColumnIndex(-1);
             }
         }
     }
-    
+
+    /**
+     * 创建自动生成主键 只支持数字类型
+     * @param column
+     * @param sqlExpression
+     * @return
+     */
     private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final SQLExpression sqlExpression) {
         GeneratedKeyCondition result;
+        /** 占位符 */
         if (sqlExpression instanceof SQLPlaceholderExpression) {
             result = new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex(), null);
+            /** 数字 */
         } else if (sqlExpression instanceof SQLNumberExpression) {
             result = new GeneratedKeyCondition(column, -1, ((SQLNumberExpression) sqlExpression).getNumber());
         } else {
@@ -151,7 +179,10 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
         }
         return result;
     }
-    
+
+    /**
+     * 跳过 ::
+     */
     private void skipsDoubleColon() {
         if (lexerEngine.skipIfEqual(Symbol.DOUBLE_COLON)) {
             lexerEngine.nextToken();

@@ -32,9 +32,13 @@ import lombok.ToString;
 @Getter
 @ToString
 public final class Column {
-    
+    /**
+     * 列名
+     */
     private final String name;
-    
+    /**
+     * 所属表名
+     */
     private final String tableName;
     
     @Override

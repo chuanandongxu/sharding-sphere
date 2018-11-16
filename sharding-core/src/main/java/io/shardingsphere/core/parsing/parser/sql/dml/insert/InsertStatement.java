@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * Insert statement.
- *
+ * insert into table1 (column1,column2) values (hello,yang)
  * @author zhangliang
  * @author maxiaoguang
  */
@@ -42,17 +42,26 @@ import java.util.List;
 @Setter
 @ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
-    
+    /**
+     * 存放column1 column2
+     */
     private final Collection<Column> columns = new LinkedList<>();
     
     private List<GeneratedKeyCondition> generatedKeyConditions = new LinkedList<>();
-    
+
+    /**
+     * 解析的hello,yang
+     */
     private final InsertValues insertValues = new InsertValues();
-    
+    /**
+     * column的最后位置
+     */
     private int columnsListLastPosition;
     
     private int generateKeyColumnIndex = -1;
-    
+    /**
+     * hello,yang 的结束位置
+     */
     private int insertValuesListLastPosition;
     
     /**

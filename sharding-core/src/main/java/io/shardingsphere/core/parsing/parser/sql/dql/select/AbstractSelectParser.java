@@ -364,7 +364,9 @@ public abstract class AbstractSelectParser implements SQLParser {
  * 当无 Order By 条件时，使用 Group By 作为排序条件（数据库本身规则）
  */
     private void appendDerivedOrderBy(final SelectStatement selectStatement) {
+        /** group by 后面不为空，order by后面为空 */
         if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
+            /** 将group by 后面items 作为 order by 的条件 */
             selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
             selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastPosition()));
         }
